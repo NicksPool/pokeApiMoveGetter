@@ -15,7 +15,7 @@ import org.json.simple.parser.ParseException;
 public class JsonPokemonCapa {
 
 	private static String gen = "1";
-	private static String verString = "blue-red";
+	private static String verString = "red-blue";
 	private static String url = "https://pokeapi.co/api/v2/generation/"+gen;
 
 
@@ -83,9 +83,7 @@ public class JsonPokemonCapa {
 					JSONObject jsonObj2 = (JSONObject) vd;
 					JSONObject version = (JSONObject)jsonObj2.get("version_group");
 					String ver = (String) version.get("name");
-					JSONObject moveLearnMethod = (JSONObject)jsonObj2.get("move_learn_method");
-					String learn = (String) moveLearnMethod.get("name");
-					if(ver.equals(verString) && learn.equals("level-up")) {
+					if(ver.equals(verString)) {
 						String[] move = new String[3];
 						JSONObject moveJSON = (JSONObject) jsonObj.get("move");
 						move[0] = (String) moveJSON.get("name");
@@ -106,6 +104,7 @@ public class JsonPokemonCapa {
     public static void triCapa(ArrayList<String[]> capa) {
     	try{
 	    	for(int i = 0;i<capa.size();i++) {
+	    		System.out.println("Tri de: "+capa.get(i)[0]);
 	    		JSONObject obj = (JSONObject) new JSONParser().parse(recupJSON(capa.get(i)[2]));
 	    		JSONObject catClass = (JSONObject) obj.get("damage_class");
 	    		String cat = (String) catClass.get("name");
@@ -133,6 +132,27 @@ public class JsonPokemonCapa {
 	    }
     }
 
+    public static void triCapaS(ArrayList<String[]> capa) {
+    	System.out.println("Tri des doubles");
+    	for(int i =0;i<capa.size();i++) {
+    		for(int j =0;j<capa.size();j++) {
+    			if(j!=i && capa.get(i)[0].equals(capa.get(j)[0])) {
+    				if(Integer.parseInt(capa.get(i)[1]) < Integer.parseInt(capa.get(j)[1])) {
+    					capa.remove(j);
+    	    			i--;
+    				}
+    				else {
+    					capa.remove(i);
+    	    			i--;
+    				}
+    				break;
+    			}
+    		}
+    	}
+    		
+    }
+    
+    
     public static String recupJSON(String urlString) {
 		String inputStr ="";
 		try {
@@ -173,9 +193,11 @@ public class JsonPokemonCapa {
     public TreeMap<Integer,ArrayList<String[]>> createCapas(){
     	TreeMap<Integer,ArrayList<String[]>> pokeCapa = new TreeMap<>();
     	for(int i : pokes.keySet()) {
-    		ArrayList<String[]> capa = implementationCapSet(pokes.get(i));
-    		triCapa(capa);
-    		pokeCapa.put(i,capa);
+    		ArrayList<String[]> capas = implementationCapSet(pokes.get(i));
+    		System.out.println("\nPokemon: "+i);
+    		triCapaS(capas);
+    		triCapa(capas);
+    		pokeCapa.put(i,capas);
     	}
     	return pokeCapa;
     }
@@ -219,6 +241,6 @@ public class JsonPokemonCapa {
     	JsonPokemonCapa p1 = new JsonPokemonCapa();
     	p1.printAll();
     	p1.createJson();
-    	System.out.println("Ecriture Réussi");
+    	System.out.println("Ecriture RÃ©ussi");
     }
 }
